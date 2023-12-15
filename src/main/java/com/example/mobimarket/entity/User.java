@@ -1,7 +1,9 @@
 package com.example.mobimarket.entity;
 
+import com.example.mobimarket.entity.base.BaseEntity;
 import com.example.mobimarket.enums.Role;
 import com.example.mobimarket.enums.Status;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -24,11 +26,7 @@ import java.util.List;
 @Builder
 @Table(name = "users")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class User implements UserDetails {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long userId;
+public class User extends BaseEntity implements UserDetails {
 
     @Column(nullable = false, unique = true)
     String email;
@@ -51,14 +49,17 @@ public class User implements UserDetails {
 
     String phoneNumber;
 
+    @JsonFormat(pattern="dd-mm-yyyy")
     LocalDate birthday;
 
     String token;
 
-    @OneToMany
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     List<Product> likedProducts;
 
-    @OneToMany
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     List<Product> myProducts;
 
 

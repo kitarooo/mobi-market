@@ -1,6 +1,5 @@
 package com.example.mobimarket.dto.request;
 
-import jdk.jfr.Name;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

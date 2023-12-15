@@ -23,6 +23,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder encoder;
     private final PasswordEncoder passwordEncoder;
     private final JwtService service;
+    private final UserServiceImpl userService;
 
 
     @Override

@@ -7,7 +7,7 @@ import com.example.mobimarket.dto.request.UserRequest;
 import java.util.List;
 
 public interface UserService {
-    String updateProfile(UserRequest request);
+    String updateProfileById(Long id, UserRequest request);
     String updateProfilePhoto(String photo);
     List<ProductResponse> getAllMyProducts();
     List<ProductResponse> getAllMyLikedProducts();
