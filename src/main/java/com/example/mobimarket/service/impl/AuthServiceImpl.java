@@ -23,7 +23,6 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder encoder;
     private final PasswordEncoder passwordEncoder;
     private final JwtService service;
-    private final UserServiceImpl userService;
 
 
     @Override
@@ -47,12 +46,16 @@ public class AuthServiceImpl implements AuthService {
             throw new UserAlreadyExistException("Пользователь с email: " + request.getEmail() + " уже существует!");
         }
 
+        if (userRepository.findUserByUsername(request.getUsername()).isPresent()) {
+            throw new UserAlreadyExistException("Пользователь с username: " + request.getUsername() + " уже существует!");
+        }
+
         User user = User.builder()
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(encoder.encode(request.getPassword()))
+                .status(Status.INACTIVE)
                 .role(Role.ROLE_USER)
-                .status(Status.ACTIVE)
                 .build();
         userRepository.save(user);
 

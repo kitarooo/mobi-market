@@ -11,13 +11,15 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-@Data
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -26,6 +28,7 @@ import java.util.List;
 @Builder
 @Table(name = "users")
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Transactional
 public class User extends BaseEntity implements UserDetails {
 
     @Column(nullable = false, unique = true)
@@ -40,26 +43,28 @@ public class User extends BaseEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     Role role;
 
-    @Enumerated(EnumType.STRING)
-    Status status;
-
     String firstname;
 
     String lastname;
 
     String phoneNumber;
 
-    @JsonFormat(pattern="dd-mm-yyyy")
+    @JsonFormat(pattern="dd.MM.yyyy")
     LocalDate birthday;
 
-    String token;
+    Integer token;
+
+    LocalDateTime tokenExpiration;
+
+    @Enumerated(EnumType.STRING)
+    Status status;
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToMany (fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     List<Product> likedProducts;
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.REFRESH})
+    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
     List<Product> myProducts;
 
 

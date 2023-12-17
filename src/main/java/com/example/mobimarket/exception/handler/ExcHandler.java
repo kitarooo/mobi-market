@@ -1,9 +1,6 @@
 package com.example.mobimarket.exception.handler;
 
-import com.example.mobimarket.exception.BaseException;
-import com.example.mobimarket.exception.NotFoundException;
-import com.example.mobimarket.exception.ProductAlreadyExistException;
-import com.example.mobimarket.exception.UserAlreadyExistException;
+import com.example.mobimarket.exception.*;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -34,5 +31,11 @@ public class ExcHandler {
     @ResponseStatus(HttpStatus.FOUND)
     public ExceptionResponse productAlreadyExistException(ProductAlreadyExistException e) {
         return new ExceptionResponse(HttpStatus.FOUND, e.getClass().getName(), e.getMessage());
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ExceptionResponse unauthorizedException(UnauthorizedException e) {
+        return new ExceptionResponse(HttpStatus.UNAUTHORIZED, e.getClass().getName(), e.getMessage());
     }
 }

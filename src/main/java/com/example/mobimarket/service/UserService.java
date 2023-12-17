@@ -1,5 +1,6 @@
 package com.example.mobimarket.service;
 
+import com.example.mobimarket.dto.request.ProductRequest;
 import com.example.mobimarket.dto.request.SendSmsRequest;
 import com.example.mobimarket.dto.response.ProductResponse;
 import com.example.mobimarket.dto.request.UserRequest;
@@ -11,7 +12,7 @@ public interface UserService {
     String updateProfilePhoto(String photo);
     List<ProductResponse> getAllMyProducts();
     List<ProductResponse> getAllMyLikedProducts();
-    ProductResponse getProductById(Long id);
+    ProductRequest getProductById(Long id);
     String likeProduct(Long id);
     String numberConfirm(Integer code, SendSmsRequest request);
     String sendMessage(SendSmsRequest request);

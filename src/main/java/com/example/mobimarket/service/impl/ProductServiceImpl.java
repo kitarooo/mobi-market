@@ -3,10 +3,16 @@ package com.example.mobimarket.service.impl;
 import com.example.mobimarket.dto.request.ProductRequest;
 import com.example.mobimarket.dto.response.ProductResponse;
 import com.example.mobimarket.entity.Product;
+import com.example.mobimarket.entity.User;
+import com.example.mobimarket.enums.Status;
+import com.example.mobimarket.exception.BaseException;
 import com.example.mobimarket.exception.NotFoundException;
+import com.example.mobimarket.exception.UnauthorizedException;
 import com.example.mobimarket.repository.ProductRepository;
+import com.example.mobimarket.repository.UserRepository;
 import com.example.mobimarket.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,6 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
+    private final UserRepository userRepository;
 
     public Product mapToProduct(ProductRequest request) {
         return Product.builder()
@@ -32,6 +39,7 @@ public class ProductServiceImpl implements ProductService {
             productResponses.add(ProductResponse.builder()
                     .name(product.getName())
                     .id(product.getId())
+                    .likes(product.getLikedUsers().size())
                     .price(product.getPrice())
                     .build());
         }
@@ -42,34 +50,52 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public String addProduct(ProductRequest request) {
-        /*if (productRepository.findByName(request.getName()).isPresent()) {
-            throw new ProductAlreadyExistException("Такой продукт уже есть");
-        }*/
+        User user = getAuthUser();
+        if (user.getStatus() == Status.ACTIVE) {
+            Product product = productRepository.save(mapToProduct(request));
 
-        productRepository.save(mapToProduct(request));
-        return "Продукт успешно добавлен!";
+            product.setUser(user);
+            user.getMyProducts().add(product);
+
+            userRepository.save(user);
+            productRepository.save(product);
+
+            return "Продукт успешно добавлен!";
+        } else {
+            throw new UnauthorizedException("Для добавления продукта - нужно пройти полную регистрацию");
+        }
     }
 
     @Override
     public String updateProductById(Long id, ProductRequest request) {
-        Product product = productRepository.findById(id).orElseThrow(() -> new NotFoundException("Продукт не найден!"));
+        User user = getAuthUser();
+        if (user.getStatus() == Status.ACTIVE) {
+            Product product = productRepository.findById(id).orElseThrow(() -> new NotFoundException("Продукт не найден!"));
 
-        product.setName(request.getName());
-        product.setPrice(request.getPrice());
-        product.setFullDescription(request.getFullDescription());
-        product.setShortDescription(request.getShortDescription());
+            product.setName(request.getName());
+            product.setPrice(request.getPrice());
+            product.setFullDescription(request.getFullDescription());
+            product.setShortDescription(request.getShortDescription());
 
-        productRepository.save(product);
+            productRepository.save(product);
 
-        return "Продукт успешно обновлен!";
+            return "Продукт успешно обновлен!";
+        } else {
+            throw new UnauthorizedException("Для изменения продукта - нужно пройти полную регистрацию!");
+        }
     }
 
     @Override
     public String deleteProduct(Long id) {
-        Product product = productRepository.findById(id).orElseThrow(() -> new NotFoundException("Продукт не найден!"));
-        productRepository.delete(product);
+        User user = getAuthUser();
+        if (user.getStatus() == Status.ACTIVE) {
+            Product product = productRepository.findById(id).orElseThrow(() -> new NotFoundException("Продукт не найден!"));
+            productRepository.delete(product);
 
-        return "Продукт был успешно удален!";
+            return "Продукт был успешно удален!";
+        } else {
+            throw new UnauthorizedException("Для удаления продукта - нужно пройти полную регистрацию!");
+        }
     }
 
     @Override
@@ -85,7 +111,12 @@ public class ProductServiceImpl implements ProductService {
                 .name(product.getName())
                 .fullDescription(product.getFullDescription())
                 .price(product.getPrice())
+                .likes(product.getLikedUsers().size())
                 .shortDescription(product.getShortDescription())
                 .build();
+    }
+
+    private User getAuthUser() {
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }

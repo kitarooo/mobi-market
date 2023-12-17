@@ -20,8 +20,8 @@ public class SmsSendService {
     }
 
     public String sendSms(SendSmsRequest request, String message) {
-        if (isPhoneNumberValid(request.getPhone())) {
-            PhoneNumber to = new PhoneNumber(request.getPhone());
+        if (isPhoneNumberValid(request.getPhoneNumber())) {
+            PhoneNumber to = new PhoneNumber(request.getPhoneNumber());
             PhoneNumber from = new PhoneNumber(twilioConfiguration.getTrialNumber());
             MessageCreator creator = Message.creator(to, from, message);
             creator.create();
@@ -29,13 +29,13 @@ public class SmsSendService {
             return "success";
         } else {
             throw new IllegalArgumentException(
-                    "Phone number [" + request.getPhone() + "] is not a valid number"
+                    "Phone number [" + request.getPhoneNumber() + "] is not a valid number"
             );
         }
 
     }
 
-    private boolean isPhoneNumberValid(String phoneNumber) {
+    private  boolean isPhoneNumberValid(String phoneNumber) {
         return !phoneNumber.isEmpty();
     }
 }

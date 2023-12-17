@@ -13,6 +13,5 @@ import java.time.LocalDate;
 public class UserRequest {
     String firstname;
     String lastname;
-    LocalDate birthday;
-    String phoneNumber;
+    String birthday;
 }

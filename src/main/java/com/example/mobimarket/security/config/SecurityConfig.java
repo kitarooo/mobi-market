@@ -29,14 +29,11 @@ public class SecurityConfig extends WebSecurityConfiguration {
             "/v3/api-docs/**",
             "/api/v2/products/allProducts"
     };
-
-    public String[] products = {"/api/v2/products/add"};
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(products).hasRole("USER")
                         .requestMatchers(PERMIT_ALL).permitAll().anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authProvider)

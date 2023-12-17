@@ -6,7 +6,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@Data
+import java.util.List;
+
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -26,9 +28,10 @@ public class Product extends BaseEntity {
 
     String photo;
 
-    int likes;
-
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.MERGE})
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST})
     User user;
+
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "likedProducts")
+    List<User> likedUsers;
 }

@@ -4,6 +4,7 @@ import com.example.mobimarket.dto.request.LoginRequest;
 import com.example.mobimarket.dto.request.RegistrationRequest;
 import com.example.mobimarket.dto.response.AuthenticationResponse;
 import com.example.mobimarket.service.impl.AuthServiceImpl;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,11 +19,13 @@ public class AuthController {
     private final AuthServiceImpl authService;
 
     @PostMapping("/registration")
+    @Operation(summary = "User registration/регистрация", description = "Регистрация, по умолчанию если пользователь еще не подтвердил через почту - у него будет статус INACTIVE! Если такой пользователь уже существует сервер выдает 403 и Exception: UserAlreadyException.")
     public String registration(@RequestBody @Valid RegistrationRequest request) {
         return authService.registration(request);
     }
 
     @PostMapping("/login")
+    @Operation(summary = "Authenticate/Аутенфикация", description = "Выдает JWT после авторизации")
     public AuthenticationResponse login(@RequestBody @Valid LoginRequest request) {
         return authService.login(request);
     }

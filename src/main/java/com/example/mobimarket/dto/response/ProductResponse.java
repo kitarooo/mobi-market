@@ -11,4 +11,5 @@ public class ProductResponse {
     Long id;
     String name;
     Double price;
+    int likes;
 }

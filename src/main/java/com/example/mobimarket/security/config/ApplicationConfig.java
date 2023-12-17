@@ -39,10 +39,4 @@ public class ApplicationConfig {
         return username -> (UserDetails) userRepository.findUserByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found!"));
     }
-
-    /*@Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration corsConfiguration =
-
-    }*/
 }

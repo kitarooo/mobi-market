@@ -10,5 +10,5 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SendSmsRequest {
     String username;
-    String phone;
+    String phoneNumber;
 }
