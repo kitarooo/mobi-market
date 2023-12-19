@@ -27,7 +27,8 @@ public class SecurityConfig extends WebSecurityConfiguration {
             "/backend/swagger-ui.html",
             "/documentation/**",
             "/v3/api-docs/**",
-            "/api/v2/products/allProducts"
+            "/api/v2/products/allProducts",
+            "/api/v1/users/refreshToken"
     };
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

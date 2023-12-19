@@ -1,14 +1,16 @@
 package com.example.mobimarket.service;
 
 import com.example.mobimarket.dto.request.ProductRequest;
+import com.example.mobimarket.dto.request.RefreshTokenRequest;
 import com.example.mobimarket.dto.request.SendSmsRequest;
+import com.example.mobimarket.dto.response.AuthenticationResponse;
 import com.example.mobimarket.dto.response.ProductResponse;
 import com.example.mobimarket.dto.request.UserRequest;
 
 import java.util.List;
 
 public interface UserService {
-    String updateProfileById(Long id, UserRequest request);
+    String updateProfileById(UserRequest request);
     String updateProfilePhoto(String photo);
     List<ProductResponse> getAllMyProducts();
     List<ProductResponse> getAllMyLikedProducts();
@@ -16,4 +18,5 @@ public interface UserService {
     String likeProduct(Long id);
     String numberConfirm(Integer code, SendSmsRequest request);
     String sendMessage(SendSmsRequest request);
+    AuthenticationResponse refreshToken(RefreshTokenRequest request);
 }

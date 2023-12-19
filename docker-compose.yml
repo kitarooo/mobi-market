@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  postgres:
+    ports:
+      - 5432
+    image: postgres:15
+    container_name: 'postgres-java'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: TyBaranina01
+      POSTGRES_DB: mobi-market
+  app:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+    container_name: 'mobi-market'
+    ports:
+      - 8080:8080
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/mobi-market
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: TyBaranina01
+      twilio.account-sid: AC7c38c85ff0aba60fe4709a5b9bcc2330
+      twilio.auth-token: 8e1fef42ca5cf38a0e4296d4fe685413
+      twilio.trial-number: +14436935017

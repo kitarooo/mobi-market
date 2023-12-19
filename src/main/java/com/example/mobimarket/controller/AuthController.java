@@ -25,7 +25,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    @Operation(summary = "Authenticate/Аутенфикация", description = "Выдает JWT после авторизации")
+    @Operation(summary = "Авторизация", description = "Выдает JWT  и Refresh token после авторизации")
     public AuthenticationResponse login(@RequestBody @Valid LoginRequest request) {
         return authService.login(request);
     }

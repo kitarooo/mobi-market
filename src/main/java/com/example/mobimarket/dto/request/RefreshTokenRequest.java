@@ -1,4 +1,4 @@
-package com.example.mobimarket.dto.response;
+package com.example.mobimarket.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthenticationResponse {
-    private String accessToken;
-    private String refreshToken;
+public class RefreshTokenRequest {
+    private String username;
+    private String token;
 }
-

@@ -5,7 +5,6 @@ import com.example.mobimarket.dto.response.ProductResponse;
 import com.example.mobimarket.entity.Product;
 import com.example.mobimarket.entity.User;
 import com.example.mobimarket.enums.Status;
-import com.example.mobimarket.exception.BaseException;
 import com.example.mobimarket.exception.NotFoundException;
 import com.example.mobimarket.exception.UnauthorizedException;
 import com.example.mobimarket.repository.ProductRepository;
@@ -56,7 +55,7 @@ public class ProductServiceImpl implements ProductService {
 
             product.setUser(user);
             user.getMyProducts().add(product);
-
+            System.out.println(user.getMyProducts());
             userRepository.save(user);
             productRepository.save(product);
 
@@ -89,9 +88,10 @@ public class ProductServiceImpl implements ProductService {
     public String deleteProduct(Long id) {
         User user = getAuthUser();
         if (user.getStatus() == Status.ACTIVE) {
-            Product product = productRepository.findById(id).orElseThrow(() -> new NotFoundException("Продукт не найден!"));
-            productRepository.delete(product);
-
+            Product product = productRepository.findByIdAndIdOfUser(id, user.getId()).orElseThrow(() -> new NotFoundException("Продукт не найден!"));
+            productRepository.deleteProductByUserIdAndProductId(user.getId(), product.getId());
+            productRepository.deleteProductFromUsersLikeProduct(id);
+            productRepository.deleteProductById(id);
             return "Продукт был успешно удален!";
         } else {
             throw new UnauthorizedException("Для удаления продукта - нужно пройти полную регистрацию!");

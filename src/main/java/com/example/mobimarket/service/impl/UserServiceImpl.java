@@ -1,17 +1,18 @@
 package com.example.mobimarket.service.impl;
 
 import com.example.mobimarket.dto.request.ProductRequest;
+import com.example.mobimarket.dto.request.RefreshTokenRequest;
 import com.example.mobimarket.dto.request.SendSmsRequest;
 import com.example.mobimarket.dto.request.UserRequest;
+import com.example.mobimarket.dto.response.AuthenticationResponse;
 import com.example.mobimarket.dto.response.ProductResponse;
 import com.example.mobimarket.entity.Product;
 import com.example.mobimarket.entity.User;
 import com.example.mobimarket.enums.Status;
-import com.example.mobimarket.exception.IncorrectTokenException;
-import com.example.mobimarket.exception.NotFoundException;
-import com.example.mobimarket.exception.TokenExpiredException;
+import com.example.mobimarket.exception.*;
 import com.example.mobimarket.repository.ProductRepository;
 import com.example.mobimarket.repository.UserRepository;
+import com.example.mobimarket.security.jwt.JwtService;
 import com.example.mobimarket.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,11 +32,12 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final SmsSendService sendSmsService;
+    private final JwtService jwtService;
     public static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     @Override
-    public String updateProfileById(Long id, UserRequest request) {
-        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("Ошибка"));
+    public String updateProfileById(UserRequest request) {
+        User user = getAuthUser();
 
         user.setFirstname(request.getFirstname());
         user.setLastname(request.getLastname());
@@ -55,12 +57,12 @@ public class UserServiceImpl implements UserService {
         User user = getAuthUser();
         // if INACTIVE - ?
         List<ProductResponse> productResponses = new ArrayList<>();
-
         for (Product product : user.getMyProducts()) {
             productResponses.add(ProductResponse.builder()
                     .name(product.getName())
                     .price(product.getPrice())
                     .id(product.getId())
+                    .likes(product.getLikedUsers().size())
                     .build());
         }
         return productResponses;
@@ -76,6 +78,7 @@ public class UserServiceImpl implements UserService {
             getAllMyLikedProducts.add(ProductResponse.builder()
                     .id(product.getId())
                     .price(product.getPrice())
+                    .likes(product.getLikedUsers().size())
                     .name(product.getName())
                     .build());
         }
@@ -103,17 +106,21 @@ public class UserServiceImpl implements UserService {
     public String likeProduct(Long id) {
         Product product = productRepository.findById(id).orElseThrow(() -> new NotFoundException("Продукт не найден!"));
         User user = getAuthUser();
+        if (user.getStatus() == Status.ACTIVE) {
+            if (productRepository.findProductByIdAndFindUserById(user.getId(), product.getId()) > 0) {
+                productRepository.dislikeProductByIdAndUserId(user.getId(), product.getId());
+                return "Успешный дизлайк!";
+            }
 
-        if (productRepository.findProductByIdAndFindUserById(user.getId(), product.getId()) > 0) {
-            productRepository.dislikeProductByIdAndUserId(user.getId(), product.getId());
-            return "Успешный дизлайк!";
+            user.getLikedProducts().add(product);
+            productRepository.saveAll(user.getLikedProducts());
+            userRepository.save(user);
+            return "Лайк успешно поставлен!";
+        } else {
+            throw new UnauthorizedException("Для этой операции необходмио пройти полную регистрацию!");
         }
-
-        user.getLikedProducts().add(product);
-        productRepository.saveAll(user.getLikedProducts());
-        userRepository.save(user);
-        return "Лайк успешно поставлен!";
     }
+
 
     @Override
     public String numberConfirm(Integer code, SendSmsRequest request) {
@@ -147,6 +154,21 @@ public class UserServiceImpl implements UserService {
         user.setTokenExpiration(LocalDateTime.now().plusMinutes(5));
         userRepository.save(user);
         return sendSmsService.sendSms(request, String.valueOf(token));
+    }
+
+    @Override
+    public AuthenticationResponse refreshToken(RefreshTokenRequest request) {
+        User user = userRepository.findUserByUsername(request.getUsername())
+                .orElseThrow(() -> new NotFoundException("Такой пользователь не сущуествует!"));
+
+        if (jwtService.isTokenValid(request.getToken(), user)) {
+            return AuthenticationResponse.builder()
+                    .refreshToken(jwtService.generateRefreshToken(user))
+                    .accessToken(jwtService.generateToken(user))
+                    .build();
+        } else {
+            throw new BaseException("Время токена истекло!");
+        }
     }
 
     private User getAuthUser() {

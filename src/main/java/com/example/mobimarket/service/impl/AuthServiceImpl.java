@@ -12,17 +12,20 @@ import com.example.mobimarket.exception.UserAlreadyExistException;
 import com.example.mobimarket.repository.UserRepository;
 import com.example.mobimarket.security.jwt.JwtService;
 import com.example.mobimarket.service.AuthService;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class AuthServiceImpl implements AuthService {
-    private final UserRepository userRepository;
-    private final PasswordEncoder encoder;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtService service;
+    final UserRepository userRepository;
+    final PasswordEncoder encoder;
+    final PasswordEncoder passwordEncoder;
+    final JwtService service;
 
 
     @Override
@@ -32,8 +35,10 @@ public class AuthServiceImpl implements AuthService {
 
         if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             var jwtToken = service.generateToken(user);
+            var refreshToken = service.generateRefreshToken(user);
             return AuthenticationResponse.builder()
-                    .token(jwtToken)
+                    .accessToken(jwtToken)
+                    .refreshToken(refreshToken)
                     .build();
         } else {
             throw new BaseException("Вы не зарегистрированы или неправильные данные!");

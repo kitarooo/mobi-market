@@ -32,6 +32,6 @@ public class Product extends BaseEntity {
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST})
     User user;
 
-    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "likedProducts")
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "likedProducts", cascade = CascadeType.MERGE)
     List<User> likedUsers;
 }

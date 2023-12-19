@@ -38,4 +38,10 @@ public class ExcHandler {
     public ExceptionResponse unauthorizedException(UnauthorizedException e) {
         return new ExceptionResponse(HttpStatus.UNAUTHORIZED, e.getClass().getName(), e.getMessage());
     }
+
+    @ExceptionHandler(IncorrectTokenException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ExceptionResponse incorrectTokenException(IncorrectTokenException e) {
+        return new ExceptionResponse(HttpStatus.NOT_FOUND, e.getClass().getName(), e.getMessage());
+    }
 }

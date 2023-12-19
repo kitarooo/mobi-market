@@ -1,8 +1,10 @@
 package com.example.mobimarket.controller;
 
 
+import com.example.mobimarket.dto.request.RefreshTokenRequest;
 import com.example.mobimarket.dto.request.SendSmsRequest;
 import com.example.mobimarket.dto.request.UserRequest;
+import com.example.mobimarket.dto.response.AuthenticationResponse;
 import com.example.mobimarket.dto.response.ProductResponse;
 import com.example.mobimarket.entity.User;
 import com.example.mobimarket.service.impl.UserServiceImpl;
@@ -18,10 +20,10 @@ import java.util.List;
 public class UserController {
     private final UserServiceImpl userService;
 
-    @PutMapping("/updateUserProfile/{id}")
+    @PutMapping("/updateUserProfile")
     @Operation(summary = "Изменение своих личных данных", description = "Доступ всем пользователям!Ендпонит для изменения своих личных данных.")
-    public String updateUserProfile(@PathVariable Long id, @RequestBody UserRequest request) {
-        return userService.updateProfileById(id, request);
+    public String updateUserProfile(@RequestBody UserRequest request) {
+        return userService.updateProfileById(request);
     }
 
     @PutMapping("/like")
@@ -58,5 +60,11 @@ public class UserController {
     @Operation(summary = "Для подтверждения полной регистрации", description = "Пользователь вводит цифры, которые были отправлены на номер телефона! Этот ендпоинт для сравнения кода котоорый указал пользователь и код который хранится в базе данных.")
     public String registerConfirm(@RequestParam Integer code, @RequestBody SendSmsRequest request) {
         return userService.numberConfirm(code, request);
+    }
+
+    @GetMapping("/refreshToken")
+    @Operation(summary = "Refresh token", description = "Обновляет JWT токен если выданный JWT уже истек, действует 6 часов")
+    public AuthenticationResponse refreshToken(@RequestBody RefreshTokenRequest request) {
+        return userService.refreshToken(request);
     }
 }

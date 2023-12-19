@@ -60,7 +60,7 @@ public class User extends BaseEntity implements UserDetails {
     Status status;
 
     @JsonIgnore
-    @ManyToMany (fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     List<Product> likedProducts;
 
     @JsonIgnore
