@@ -7,12 +7,10 @@ import com.example.mobimarket.dto.request.UserRequest;
 import com.example.mobimarket.dto.response.AuthenticationResponse;
 import com.example.mobimarket.dto.response.ProductResponse;
 import com.example.mobimarket.entity.User;
-import com.example.mobimarket.service.FileUpload;
 import com.example.mobimarket.service.impl.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
