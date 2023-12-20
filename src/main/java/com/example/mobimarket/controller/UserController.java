@@ -21,6 +21,7 @@ import java.util.List;
 @RequestMapping("/api/v1/users")
 @CrossOrigin("http://localhost:5173")
 @RequiredArgsConstructor
+
 public class UserController {
     private final UserServiceImpl userService;
 
