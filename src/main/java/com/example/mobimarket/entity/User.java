@@ -54,6 +54,8 @@ public class User extends BaseEntity implements UserDetails {
 
     Integer token;
 
+    String imageUrl;
+
     LocalDateTime tokenExpiration;
 
     @Enumerated(EnumType.STRING)

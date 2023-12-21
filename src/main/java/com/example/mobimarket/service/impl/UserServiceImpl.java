@@ -1,11 +1,14 @@
 package com.example.mobimarket.service.impl;
 
+import com.cloudinary.Cloudinary;
 import com.example.mobimarket.dto.request.ProductRequest;
 import com.example.mobimarket.dto.request.RefreshTokenRequest;
 import com.example.mobimarket.dto.request.SendSmsRequest;
 import com.example.mobimarket.dto.request.UserRequest;
 import com.example.mobimarket.dto.response.AuthenticationResponse;
+import com.example.mobimarket.dto.response.ImageResponse;
 import com.example.mobimarket.dto.response.ProductResponse;
+import com.example.mobimarket.dto.response.UserResponse;
 import com.example.mobimarket.entity.Product;
 import com.example.mobimarket.entity.User;
 import com.example.mobimarket.enums.Status;
@@ -13,18 +16,18 @@ import com.example.mobimarket.exception.*;
 import com.example.mobimarket.repository.ProductRepository;
 import com.example.mobimarket.repository.UserRepository;
 import com.example.mobimarket.security.jwt.JwtService;
+import com.example.mobimarket.service.FileUpload;
 import com.example.mobimarket.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +36,8 @@ public class UserServiceImpl implements UserService {
     private final ProductRepository productRepository;
     private final SmsSendService sendSmsService;
     private final JwtService jwtService;
+    private final Cloudinary cloudinary;
+    private final ImageUploadServiceImpl imageUploadService;
     public static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     @Override
@@ -48,8 +53,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String updateProfilePhoto(String photo) {
-        return null;
+    public String updateProfilePhoto(MultipartFile multipartFile, User user) throws IOException {
+        user.setImageUrl(imageUploadService.saveImage(multipartFile));
+        userRepository.save(user);
+        return "Удачно!";
+    }
+
+    public ImageResponse getImageByUserId(Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found!"));
+        return ImageResponse.builder().imageUrl(user.getImageUrl()).build();
     }
 
     @Override
@@ -169,6 +181,21 @@ public class UserServiceImpl implements UserService {
         } else {
             throw new BaseException("Время токена истекло!");
         }
+    }
+
+    @Override
+    public UserResponse getUserById(Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("Пользователь не найден!"));
+
+        return UserResponse.builder()
+                .imageUrl(user.getImageUrl())
+                .username(user.getUsername())
+                .firstname(user.getFirstname())
+                .lastname(user.getLastname())
+                .birthday(user.getBirthday())
+                .phoneNumber(user.getPhoneNumber())
+                .email(user.getEmail())
+                .build();
     }
 
     private User getAuthUser() {
