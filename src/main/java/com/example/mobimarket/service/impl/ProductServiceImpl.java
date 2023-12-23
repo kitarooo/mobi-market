@@ -2,17 +2,20 @@ package com.example.mobimarket.service.impl;
 
 import com.example.mobimarket.dto.request.ProductRequest;
 import com.example.mobimarket.dto.response.ProductResponse;
+import com.example.mobimarket.entity.Image;
 import com.example.mobimarket.entity.Product;
 import com.example.mobimarket.entity.User;
 import com.example.mobimarket.enums.Status;
 import com.example.mobimarket.exception.NotFoundException;
 import com.example.mobimarket.exception.UnauthorizedException;
+import com.example.mobimarket.repository.ImageRepository;
 import com.example.mobimarket.repository.ProductRepository;
 import com.example.mobimarket.repository.UserRepository;
 import com.example.mobimarket.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +25,8 @@ import java.util.List;
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final ImageUploadServiceImpl uploadService;
+    private final ImageRepository imageRepository;
 
     public Product mapToProduct(ProductRequest request) {
         return Product.builder()
@@ -40,6 +45,7 @@ public class ProductServiceImpl implements ProductService {
                     .id(product.getId())
                     .likes(product.getLikedUsers().size())
                     .price(product.getPrice())
+                    .images(product.getImages())
                     .build());
         }
 
@@ -52,7 +58,6 @@ public class ProductServiceImpl implements ProductService {
         User user = getAuthUser();
         if (user.getStatus() == Status.ACTIVE) {
             Product product = productRepository.save(mapToProduct(request));
-
             product.setUser(user);
             user.getMyProducts().add(product);
             System.out.println(user.getMyProducts());
@@ -64,6 +69,8 @@ public class ProductServiceImpl implements ProductService {
             throw new UnauthorizedException("Для добавления продукта - нужно пройти полную регистрацию");
         }
     }
+
+
 
     @Override
     public String updateProductById(Long id, ProductRequest request) {
@@ -105,7 +112,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductRequest getProductById(Long id) {
-        Product product = productRepository.findById(id).orElseThrow(() -> new NotFoundException("Ппродукт не найден!"));
+        Product product = productRepository.findById(id).orElseThrow(() -> new NotFoundException("Продукт не найден!"));
 
         return ProductRequest.builder()
                 .name(product.getName())
@@ -113,7 +120,27 @@ public class ProductServiceImpl implements ProductService {
                 .price(product.getPrice())
                 .likes(product.getLikedUsers().size())
                 .shortDescription(product.getShortDescription())
+                .images(product.getImages())
                 .build();
+    }
+
+    @Override
+    public String updateProductImages(Long id, MultipartFile[] multipartFiles) {
+        Product product = productRepository.findById(id).orElseThrow(() -> new NotFoundException("Продукт не найден!"));
+        List<Image> images = new ArrayList<>();
+        for (MultipartFile multipartFile : multipartFiles) {
+            images.add(Image.builder().imageUrl(uploadService.saveImage(multipartFile)).build());
+        }
+
+        //product.setImages(images);
+
+        for (Image image : images) {
+            product.getImages().add(image);
+            image.setProduct(product);
+        }
+        imageRepository.saveAll(images);
+        productRepository.save(product);
+        return "Данные успешно обновлены!";
     }
 
     private User getAuthUser() {

@@ -2,11 +2,14 @@ package com.example.mobimarket.controller;
 
 import com.example.mobimarket.dto.request.ProductRequest;
 import com.example.mobimarket.dto.response.ProductResponse;
+import com.example.mobimarket.entity.Product;
 import com.example.mobimarket.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -45,5 +48,11 @@ public class ProductController {
     @Operation(summary = "Получение продукта по id", description = "Доступ всем пользователям! Ендпонит для отображения одного продукта с полным описанием продукта.")
     public ProductRequest getProductById(@PathVariable Long id) {
         return productService.getProductById(id);
+    }
+
+    @PostMapping("/updateProductImages/{id}")
+    @Operation(summary = "Добавление фотографии для продукта", description = "Доступ всем пользователям, которые зарегистрированы полностью. Ендпоинт для добавления фотографии продукта, находит продукт по id, т.к. названия продуктов могут составлять коллизию и это нормально!")
+    public String updateProductImages(@PathVariable Long id, @RequestParam MultipartFile[] multipartFiles) {
+        return productService.updateProductImages(id, multipartFiles);
     }
 }

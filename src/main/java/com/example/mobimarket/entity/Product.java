@@ -34,4 +34,7 @@ public class Product extends BaseEntity {
 
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "likedProducts", cascade = CascadeType.MERGE)
     List<User> likedUsers;
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
+    List<Image> images;
 }

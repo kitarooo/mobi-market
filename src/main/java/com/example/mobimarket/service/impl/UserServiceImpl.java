@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
     public String updateProfilePhoto(MultipartFile multipartFile, User user) throws IOException {
         user.setImageUrl(imageUploadService.saveImage(multipartFile));
         userRepository.save(user);
-        return "Удачно!";
+        return "Фото профиля успешно обновлен!!";
     }
 
     public ImageResponse getImageByUserId(Long id) {
@@ -138,17 +138,17 @@ public class UserServiceImpl implements UserService {
     public String numberConfirm(Integer code, SendSmsRequest request) {
         User user = userRepository.findUserByUsername(request.getUsername())
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден!"));
-        if (!Objects.equals(user.getToken(), code)) {
+        if (!Objects.equals(user.getCode(), code)) {
             throw new IncorrectTokenException("Неверный код!");
         }
 
         if (user.getTokenExpiration().isBefore(LocalDateTime.now())) {
-            user.setToken(0);
+            user.setCode(0);
             user.setTokenExpiration(null);
             userRepository.save(user);
             throw new TokenExpiredException("Время использования вашего кода истекло! Пожалуйста запросите новый код!");
         }
-        user.setToken(0);
+        user.setCode(0);
         user.setTokenExpiration(null);
         user.setPhoneNumber(request.getPhoneNumber());
         user.setStatus(Status.ACTIVE);
@@ -162,7 +162,7 @@ public class UserServiceImpl implements UserService {
         Integer token = random.nextInt(1000, 9999);
         User user = userRepository.findUserByUsername(request.getUsername())
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден!"));
-        user.setToken(token);
+        user.setCode(token);
         user.setTokenExpiration(LocalDateTime.now().plusMinutes(5));
         userRepository.save(user);
         return sendSmsService.sendSms(request, String.valueOf(token));

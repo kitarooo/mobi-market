@@ -76,16 +76,19 @@ public class UserController {
     }
 
     @PostMapping("/updatePhoto")
+    @Operation(summary = "Обновление фото профиля", description = "Обновляет фото профиля юзера!")
     public String updateProfilePhoto(@RequestParam MultipartFile multipartFile, @AuthenticationPrincipal User user) throws IOException {
         return userService.updateProfilePhoto(multipartFile, user);
     }
 
     @GetMapping("/getImage/{id}")
+    @Operation(summary = "Для выдачи линка с изображением, который есть у пользователя!")
     public ImageResponse getImage(@PathVariable Long id) {
         return userService.getImageByUserId(id);
     }
 
     @GetMapping("/getUserById/{id}")
+    @Operation(summary = "Данные пользователя", description = "Данные о пользователе, которые он указал и может изменять их")
     public UserResponse getUserById(@PathVariable Long id) {
         return userService.getUserById(id);
     }

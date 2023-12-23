@@ -52,7 +52,7 @@ public class User extends BaseEntity implements UserDetails {
     @JsonFormat(pattern="dd.MM.yyyy")
     LocalDate birthday;
 
-    Integer token;
+    Integer code;
 
     String imageUrl;
 
