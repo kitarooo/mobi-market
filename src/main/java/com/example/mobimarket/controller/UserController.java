@@ -69,7 +69,7 @@ public class UserController {
         return userService.numberConfirm(code, request);
     }
 
-    @GetMapping("/refreshToken")
+    @PostMapping("/refreshToken")
     @Operation(summary = "Refresh token", description = "Обновляет JWT токен если выданный JWT уже истек, действует 6 часов")
     public AuthenticationResponse refreshToken(@RequestBody RefreshTokenRequest request) {
         return userService.refreshToken(request);
