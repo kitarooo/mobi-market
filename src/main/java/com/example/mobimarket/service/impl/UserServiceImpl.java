@@ -184,8 +184,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse getUserById(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("Пользователь не найден!"));
+    public UserResponse getUserByUsername(String username) {
+        User user = userRepository.findUserByUsername(username).orElseThrow(() -> new NotFoundException("Пользователь не найден!"));
 
         return UserResponse.builder()
                 .imageUrl(user.getImageUrl())

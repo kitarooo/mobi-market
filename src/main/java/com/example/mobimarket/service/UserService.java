@@ -23,5 +23,5 @@ public interface UserService {
     String numberConfirm(Integer code, SendSmsRequest request);
     String sendMessage(SendSmsRequest request);
     AuthenticationResponse refreshToken(RefreshTokenRequest request);
-    UserResponse getUserById(Long id);
+    UserResponse getUserByUsername(String username);
 }

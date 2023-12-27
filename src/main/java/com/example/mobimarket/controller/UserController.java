@@ -87,9 +87,9 @@ public class UserController {
         return userService.getImageByUserId(id);
     }
 
-    @GetMapping("/getUserById/{id}")
+    @GetMapping("/getUserByUsername")
     @Operation(summary = "Данные пользователя", description = "Данные о пользователе, которые он указал и может изменять их")
-    public UserResponse getUserById(@PathVariable Long id) {
-        return userService.getUserById(id);
+    public UserResponse getUserById(@RequestParam String username) {
+        return userService.getUserByUsername(username);
     }
 }
