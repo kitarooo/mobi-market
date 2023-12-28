@@ -2,6 +2,7 @@ package com.example.mobimarket.controller;
 
 import com.example.mobimarket.dto.request.ProductRequest;
 import com.example.mobimarket.dto.response.ProductResponse;
+import com.example.mobimarket.dto.response.ProductResponseId;
 import com.example.mobimarket.entity.Product;
 import com.example.mobimarket.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,7 +23,7 @@ public class ProductController {
 
     @PostMapping("/addProduct")
     @Operation(summary = "Добавление своего товара", description = "Доступ пользователям, которые прошли полную регистрацию! Ендпоинт для создания своего товара.")
-    public String addProduct(@RequestBody ProductRequest request) {
+    public ProductResponseId addProduct(@RequestBody ProductRequest request) {
         return productService.addProduct(request);
     }
 

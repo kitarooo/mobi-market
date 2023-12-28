@@ -2,6 +2,7 @@ package com.example.mobimarket.service.impl;
 
 import com.example.mobimarket.dto.request.ProductRequest;
 import com.example.mobimarket.dto.response.ProductResponse;
+import com.example.mobimarket.dto.response.ProductResponseId;
 import com.example.mobimarket.entity.Image;
 import com.example.mobimarket.entity.Product;
 import com.example.mobimarket.entity.User;
@@ -54,7 +55,7 @@ public class ProductServiceImpl implements ProductService {
 
 
     @Override
-    public String addProduct(ProductRequest request) {
+    public ProductResponseId addProduct(ProductRequest request) {
         User user = getAuthUser();
         if (user.getStatus() == Status.ACTIVE) {
             Product product = productRepository.save(mapToProduct(request));
@@ -64,7 +65,7 @@ public class ProductServiceImpl implements ProductService {
             userRepository.save(user);
             productRepository.save(product);
 
-            return "Продукт успешно добавлен!";
+            return ProductResponseId.builder().id(product.getId()).build();
         } else {
             throw new UnauthorizedException("Для добавления продукта - нужно пройти полную регистрацию");
         }

@@ -23,7 +23,6 @@ import java.util.List;
 @RequestMapping("/api/v1/users")
 @CrossOrigin
 @RequiredArgsConstructor
-
 public class UserController {
     private final UserServiceImpl userService;
 
