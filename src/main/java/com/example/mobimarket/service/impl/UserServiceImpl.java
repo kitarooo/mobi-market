@@ -92,6 +92,7 @@ public class UserServiceImpl implements UserService {
                     .id(product.getId())
                     .price(product.getPrice())
                     .likes(product.getLikedUsers().size())
+                            .images(product.getImages())
                     .name(product.getName())
                     .build());
         }
