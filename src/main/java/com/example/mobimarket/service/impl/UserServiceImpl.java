@@ -1,6 +1,5 @@
 package com.example.mobimarket.service.impl;
 
-import com.cloudinary.Cloudinary;
 import com.example.mobimarket.dto.request.ProductRequest;
 import com.example.mobimarket.dto.request.RefreshTokenRequest;
 import com.example.mobimarket.dto.request.SendSmsRequest;
@@ -51,7 +50,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String updateProfilePhoto(MultipartFile multipartFile, User user) throws IOException {
+    public String updateProfilePhoto(MultipartFile multipartFile, User user) {
         user.setImageUrl(imageUploadService.saveImage(multipartFile));
         userRepository.save(user);
         return "Фото профиля успешно обновлен!!";
