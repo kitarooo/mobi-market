@@ -16,7 +16,6 @@ import com.example.mobimarket.exception.*;
 import com.example.mobimarket.repository.ProductRepository;
 import com.example.mobimarket.repository.UserRepository;
 import com.example.mobimarket.security.jwt.JwtService;
-import com.example.mobimarket.service.FileUpload;
 import com.example.mobimarket.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,7 +35,6 @@ public class UserServiceImpl implements UserService {
     private final ProductRepository productRepository;
     private final SmsSendService sendSmsService;
     private final JwtService jwtService;
-    private final Cloudinary cloudinary;
     private final ImageUploadServiceImpl imageUploadService;
     public static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
